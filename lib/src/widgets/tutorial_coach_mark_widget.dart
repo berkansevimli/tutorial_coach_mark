@@ -10,6 +10,7 @@ import 'package:tutorial_coach_mark/src/widgets/animated_focus_light.dart';
 
 /// Ana tutorial coach mark widget'ı
 /// Content cycling özelliği ile overlay'e tıklandığında farklı içerikler gösterebilir
+/// Döngü tamamlandığında otomatik kapanma özelliği mevcuttur
 class TutorialCoachMarkWidget extends StatefulWidget {
   const TutorialCoachMarkWidget({
     Key? key,
@@ -19,6 +20,7 @@ class TutorialCoachMarkWidget extends StatefulWidget {
     this.clickTarget,
     this.onClickTargetWithTapPosition,
     this.clickOverlay,
+    this.onCycleComplete,
     this.alignSkip = Alignment.bottomRight,
     this.textSkip = "SKIP",
     this.onClickSkip,
@@ -46,6 +48,10 @@ class TutorialCoachMarkWidget extends StatefulWidget {
   final FutureOr Function(TargetFocus, TapDownDetails)?
       onClickTargetWithTapPosition;
   final FutureOr Function(TargetFocus)? clickOverlay;
+
+  /// Content cycling döngüsü tamamlandığında çağrılır
+  final FutureOr Function(TargetFocus)? onCycleComplete;
+
   final void Function()? finish;
   final Color colorShadow;
   final double opacityShadow;
@@ -118,6 +124,10 @@ class TutorialCoachMarkWidgetState extends State<TutorialCoachMarkWidget>
               setState(() {
                 _currentContentIndex = contentIndex;
               });
+            },
+            onCycleComplete: (target) {
+              // Cycle complete callback'ini client'a ilet
+              return widget.onCycleComplete?.call(target);
             },
             focus: (target) {
               setState(() {
@@ -353,4 +363,8 @@ class TutorialCoachMarkWidgetState extends State<TutorialCoachMarkWidget>
 
   /// Mevcut content index'ini döndürür (content cycling için)
   int get currentContentIndex => _currentContentIndex;
+
+  /// Döngünün tamamlanıp tamamlanmadığını döndürür
+  bool get hasCycleCompleted =>
+      _focusLightKey.currentState?.hasCycleCompleted ?? false;
 }

@@ -12,6 +12,7 @@ import 'package:tutorial_coach_mark/src/util.dart';
 
 /// AnimatedFocusLight widget'ı - tutorial target'larının animasyonlu gösterimini sağlar
 /// Content cycling özelliği ile overlay'e tıklandığında farklı içerikler gösterilebilir
+/// Döngü tamamlandığında otomatik kapanma özelliği mevcuttur
 class AnimatedFocusLight extends StatefulWidget {
   const AnimatedFocusLight({
     Key? key,
@@ -23,6 +24,7 @@ class AnimatedFocusLight extends StatefulWidget {
     this.clickTargetWithTapPosition,
     this.clickOverlay,
     this.onContentChanged,
+    this.onCycleComplete,
     this.paddingFocus = 10,
     this.colorShadow = Colors.black,
     this.opacityShadow = 0.8,
@@ -47,6 +49,9 @@ class AnimatedFocusLight extends StatefulWidget {
 
   /// Content cycling sırasında içerik değiştiğinde çağrılır
   final Function(TargetFocus, int contentIndex)? onContentChanged;
+
+  /// Content cycling döngüsü tamamlandığında çağrılır
+  final Function(TargetFocus)? onCycleComplete;
 
   final Function? removeFocus;
   final Function()? finish;
@@ -86,6 +91,9 @@ abstract class AnimatedFocusLightState extends State<AnimatedFocusLight>
 
   /// Content cycling için current content index
   int _currentContentIndex = 0;
+
+  /// Döngünün tamamlanıp tamamlanmadığını takip eder
+  bool _hasCycleCompleted = false;
 
   double _progressAnimated = 0;
   int nextIndex = 0;
@@ -149,6 +157,7 @@ abstract class AnimatedFocusLightState extends State<AnimatedFocusLight>
   }
 
   /// Content cycling için alternatif içerikleri döndürür
+  /// Döngü tamamlandığında otomatik kapanma mantığını da yönetir
   void _cycleContent() {
     if (!_targetFocus.enableContentCycling ||
         _targetFocus.alternativeContents == null ||
@@ -156,16 +165,49 @@ abstract class AnimatedFocusLightState extends State<AnimatedFocusLight>
       return;
     }
 
+    final totalContents =
+        _targetFocus.alternativeContents!.length + 1; // +1 for main content
+    final oldContentIndex = _currentContentIndex;
+
     safeSetState(() {
-      _currentContentIndex = (_currentContentIndex + 1) %
-          (_targetFocus.alternativeContents!.length + 1);
+      _currentContentIndex = (_currentContentIndex + 1) % totalContents;
     });
+
+    // Döngü tamamlanma kontrolü: İlk içeriğe geri döndük ve daha önce en az bir alternative content gösterildi
+    if (_currentContentIndex == 0 && oldContentIndex > 0) {
+      _hasCycleCompleted = true;
+      _handleCycleComplete();
+      return;
+    }
 
     // Parent widget'a content değişikliğini bildir
     widget.onContentChanged?.call(_targetFocus, _currentContentIndex);
 
     // Focus callback'ini tekrar çağır ki yeni content görüntülensin
     widget.focus?.call(_targetFocus);
+  }
+
+  /// Döngü tamamlandığında çağrılır ve uygun aksiyonu alır
+  void _handleCycleComplete() {
+    // Önce cycle complete callback'ini çağır
+    widget.onCycleComplete?.call(_targetFocus);
+
+    // Target'ın kendi callback'ini kontrol et
+    bool shouldClose = _targetFocus.autoCloseAfterCycle;
+
+    if (_targetFocus.onCycleComplete != null) {
+      shouldClose = _targetFocus.onCycleComplete!();
+    }
+
+    if (shouldClose) {
+      // Target'ı kapat ve bir sonrakine geç
+      nextIndex++;
+      _revertAnimation();
+    } else {
+      // Döngüyü devam ettir
+      widget.onContentChanged?.call(_targetFocus, _currentContentIndex);
+      widget.focus?.call(_targetFocus);
+    }
   }
 
   Future _tapHandler({
@@ -201,8 +243,9 @@ abstract class AnimatedFocusLightState extends State<AnimatedFocusLight>
     if (_currentFocus < 0) return;
     _targetFocus = widget.targets[_currentFocus];
 
-    // Yeni target'a geçerken content index'i sıfırla
+    // Yeni target'a geçerken content index'i ve cycle flag'ini sıfırla
     _currentContentIndex = 0;
+    _hasCycleCompleted = false;
 
     _controller.duration = focusDuration;
 
@@ -337,6 +380,9 @@ abstract class AnimatedFocusLightState extends State<AnimatedFocusLight>
 
   /// Mevcut content index'ini döndürür (content cycling için)
   int get currentContentIndex => _currentContentIndex;
+
+  /// Döngünün tamamlanıp tamamlanmadığını döndürür
+  bool get hasCycleCompleted => _hasCycleCompleted;
 }
 
 class AnimatedStaticFocusLightState extends AnimatedFocusLightState {

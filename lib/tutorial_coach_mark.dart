@@ -37,6 +37,7 @@ export 'package:tutorial_coach_mark/src/util.dart';
 ///     identify: "menu",
 ///     keyTarget: menuKey,
 ///     enableContentCycling: true, // Overlay tıklandığında içerik değişir
+///     autoCloseAfterCycle: true,  // Döngü bitince otomatik kapanır
 ///     contents: [
 ///       TargetContent(
 ///         align: ContentAlign.bottom,
@@ -57,6 +58,10 @@ export 'package:tutorial_coach_mark/src/util.dart';
 ///         ),
 ///       ],
 ///     ],
+///     onCycleComplete: () {
+///       print("Döngü tamamlandı!");
+///       return true; // true: kapat, false: devam et
+///     },
 ///   ),
 /// ];
 /// ```
@@ -64,6 +69,7 @@ export 'package:tutorial_coach_mark/src/util.dart';
 /// Key features:
 /// - Multiple target focusing
 /// - Content cycling (overlay tıklanınca içerik değişir)
+/// - Auto close after cycle completion (döngü bitince otomatik kapanma)
 /// - Customizable animations and styling
 /// - Skip button functionality
 /// - Support for safe area
@@ -83,6 +89,10 @@ class TutorialCoachMark {
   final FutureOr<void> Function(TargetFocus, TapDownDetails)?
       onClickTargetWithTapPosition;
   final FutureOr<void> Function(TargetFocus)? onClickOverlay;
+
+  /// Content cycling döngüsü tamamlandığında çağrılır
+  final FutureOr<void> Function(TargetFocus)? onCycleComplete;
+
   final Function()? onFinish;
   final double paddingFocus;
 
@@ -118,6 +128,7 @@ class TutorialCoachMark {
     this.onClickTarget,
     this.onClickTargetWithTapPosition,
     this.onClickOverlay,
+    this.onCycleComplete,
     this.onFinish,
     this.paddingFocus = 10,
     this.onSkip,
@@ -148,6 +159,7 @@ class TutorialCoachMark {
           clickTarget: onClickTarget,
           onClickTargetWithTapPosition: onClickTargetWithTapPosition,
           clickOverlay: onClickOverlay,
+          onCycleComplete: onCycleComplete,
           paddingFocus: paddingFocus,
           onClickSkip: skip,
           alignSkip: alignSkip,
@@ -254,6 +266,10 @@ class TutorialCoachMark {
 
   /// Mevcut content index'ini döndürür (content cycling için)
   int? get currentContentIndex => _widgetKey.currentState?.currentContentIndex;
+
+  /// Döngünün tamamlanıp tamamlanmadığını döndürür
+  bool get hasCycleCompleted =>
+      _widgetKey.currentState?.hasCycleCompleted ?? false;
 
   void _removeOverlay() {
     _overlayEntry?.remove();

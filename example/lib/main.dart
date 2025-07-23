@@ -59,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  // Content Cycling özelliğini gösteren buton
+                  // Auto-close after cycle demo
                   Container(
                     key: keyButton,
                     width: double.infinity,
@@ -71,14 +71,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: ElevatedButton(
                       onPressed: () {},
                       child: Text(
-                        "Content Cycling Demo\n(Overlay'e tıklayın)",
+                        "Auto-Close Demo\n(Döngü bitince otomatik kapanır)",
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: Colors.white, fontSize: 12),
                       ),
                     ),
                   ),
 
-                  // Normal tutorial butonu
+                  // Custom callback demo
                   Container(
                     key: keyButton1,
                     width: double.infinity,
@@ -90,13 +90,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: ElevatedButton(
                       onPressed: () {},
                       child: Text(
-                        "Normal Tutorial Button",
-                        style: TextStyle(color: Colors.white),
+                        "Custom Callback Demo\n(Özel kapatma mantığı)",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white, fontSize: 12),
                       ),
                     ),
                   ),
 
-                  // Diğer butonlar
+                  // Manual control demo
                   Container(
                     key: keyButton2,
                     width: double.infinity,
@@ -108,8 +109,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: ElevatedButton(
                       onPressed: () {},
                       child: Text(
-                        "Another Button",
-                        style: TextStyle(color: Colors.white),
+                        "Manual Control Demo\n(Döngü devam eder)",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white, fontSize: 12),
                       ),
                     ),
                   ),
@@ -125,8 +127,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: ElevatedButton(
                       onPressed: () {},
                       child: Text(
-                        "Purple Button",
-                        style: TextStyle(color: Colors.white),
+                        "Normal Target\n(Cycle özelliği yok)",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white, fontSize: 12),
                       ),
                     ),
                   ),
@@ -145,7 +148,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: ElevatedButton(
                             onPressed: () {},
                             child: Text(
-                              "Left Button",
+                              "Son Target",
                               style: TextStyle(color: Colors.white),
                             ),
                           ),
@@ -163,7 +166,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: ElevatedButton(
                             onPressed: () {},
                             child: Text(
-                              "Right Button",
+                              "Finished!",
                               style: TextStyle(color: Colors.white),
                             ),
                           ),
@@ -198,6 +201,7 @@ class _MyHomePageState extends State<MyHomePage> {
       imageFilter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
       onFinish: () {
         print("Tutorial tamamlandı");
+        _showCompletionDialog();
       },
       onClickTarget: (target) {
         print('onClickTarget: ${target.identify}');
@@ -209,8 +213,10 @@ class _MyHomePageState extends State<MyHomePage> {
       },
       onClickOverlay: (target) {
         print('onClickOverlay: ${target.identify}');
-        // Content cycling aktifse bu callback overlay'e her tıklamada çağrılır
-        // Ancak target kapanmaz, sadece içerik değişir
+      },
+      onCycleComplete: (target) {
+        print('Global onCycleComplete: ${target.identify}');
+        // Global cycle complete callback
       },
       onSkip: () {
         print("Tutorial atlandı");
@@ -220,16 +226,39 @@ class _MyHomePageState extends State<MyHomePage> {
     tutorialCoachMark.show(context: context);
   }
 
+  void _showCompletionDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("🎉 Tebrikler!"),
+        content: Text(
+          "Cycle Complete özelliğini başarıyla test ettiniz!\n\n"
+          "• Auto-close after cycle\n"
+          "• Custom callback control\n"
+          "• Manuel cycle control\n\n"
+          "artık kullanıma hazır!",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text("Tamam"),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _initTarget() {
     targets.clear();
 
-    // Content Cycling özelliği olan target
+    // 1. Auto-close after cycle demo
     targets.add(
       TargetFocus(
-        identify: "content_cycling_demo",
+        identify: "auto_close_demo",
         keyTarget: keyButton,
-        enableContentCycling: true, // Bu özelliği aktifleştir
-        enableOverlayTab: true, // Overlay'e tıklamayı aktifleştir
+        enableContentCycling: true,
+        autoCloseAfterCycle: true, // ✅ Döngü bitince otomatik kapat
+        enableOverlayTab: true,
         contents: [
           TargetContent(
             align: ContentAlign.bottom,
@@ -253,7 +282,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      "Content Cycling Demo 🎯",
+                      "🔄 Auto-Close Demo",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.blue,
@@ -262,8 +291,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     SizedBox(height: 10),
                     Text(
-                      "Bu, content cycling özelliğinin ilk içeriğidir.\n\n" +
-                          "Overlay'e (gri alan) tıklayarak farklı içerikleri görebilirsiniz!\n\n" +
+                      "Bu target döngü tamamlandığında otomatik kapanır.\n\n" +
+                          "Overlay'e tıklayarak 3 farklı içeriği gördükten sonra otomatik olarak bir sonraki target'a geçecek.\n\n" +
                           "🖱️ Overlay'e tıklayın →",
                       style: TextStyle(color: Colors.black87),
                     ),
@@ -274,7 +303,40 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
         alternativeContents: [
-          // İkinci içerik seti
+          [
+            TargetContent(
+              align: ContentAlign.bottom,
+              padding: EdgeInsets.all(20),
+              builder: (context, controller) {
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade50,
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(color: Colors.blue, width: 2),
+                  ),
+                  padding: EdgeInsets.all(20),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "📖 İkinci İçerik",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                          fontSize: 18,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        "Bu ikinci içerik. Bir daha tıklayın.",
+                        style: TextStyle(color: Colors.black87),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ],
           [
             TargetContent(
               align: ContentAlign.bottom,
@@ -289,10 +351,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   padding: EdgeInsets.all(20),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
+                    children: [
                       Text(
-                        "İkinci İçerik! 🎉",
+                        "🎯 Son İçerik",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.green,
@@ -301,47 +362,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       SizedBox(height: 10),
                       Text(
-                        "Harika! Overlay'e tıkladığınız için içerik değişti.\n\n" +
-                            "Bu özellik sayesinde aynı target için farklı açıklamalar gösterebilirsiniz.\n\n" +
-                            "🖱️ Tekrar tıklayın →",
-                        style: TextStyle(color: Colors.black87),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ],
-          // Üçüncü içerik seti
-          [
-            TargetContent(
-              align: ContentAlign.bottom,
-              padding: EdgeInsets.all(20),
-              builder: (context, controller) {
-                return Container(
-                  decoration: BoxDecoration(
-                    color: Colors.orange.shade50,
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(color: Colors.orange, width: 2),
-                  ),
-                  padding: EdgeInsets.all(20),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        "Üçüncü İçerik! 🚀",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.orange,
-                          fontSize: 18,
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        "Mükemmel! Bu son alternatif içerik.\n\n" +
-                            "Tekrar tıklarsanız döngü başa dönecek.\n\n" +
-                            "Target'a tıklayarak bir sonraki adıma geçebilirsiniz! 👆",
+                        "Bu son içerik! Tekrar tıklayın ve otomatik olarak kapanacak.",
                         style: TextStyle(color: Colors.black87),
                       ),
                     ],
@@ -354,11 +375,174 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
 
-    // Normal target'lar
+    // 2. Custom callback demo
+    targets.add(
+      TargetFocus(
+        identify: "custom_callback_demo",
+        keyTarget: keyButton1,
+        enableContentCycling: true,
+        autoCloseAfterCycle: false, // Manuel kontrol
+        enableOverlayTab: true,
+        onCycleComplete: () {
+          // Özel kapatma mantığı
+          print("Custom callback çağrıldı!");
+
+          // Dialog göster ve kullanıcıya sor
+          bool shouldClose = true; // Varsayılan olarak kapat
+
+          // Bu örnekte her zaman kapat, gerçek uygulamada dialog vs. gösterebilirsiniz
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Döngü tamamlandı! Özel callback ile kapatıldı."),
+              duration: Duration(seconds: 2),
+            ),
+          );
+
+          return shouldClose; // true: kapat, false: devam et
+        },
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            padding: EdgeInsets.all(20),
+            builder: (context, controller) {
+              return Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                padding: EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "🎛️ Custom Callback Demo",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
+                        fontSize: 18,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      "Bu target özel callback kullanır.\n\n" +
+                          "Döngü bittiğinde custom mantık çalışır ve size SnackBar gösterir.",
+                      style: TextStyle(color: Colors.black87),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+        alternativeContents: [
+          [
+            TargetContent(
+              align: ContentAlign.bottom,
+              padding: EdgeInsets.all(20),
+              builder: (context, controller) {
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Colors.green.shade50,
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(color: Colors.green, width: 2),
+                  ),
+                  padding: EdgeInsets.all(20),
+                  child: Text("Custom callback son içerik!"),
+                );
+              },
+            ),
+          ],
+        ],
+      ),
+    );
+
+    // 3. Manuel control demo (döngü devam eder)
+    targets.add(
+      TargetFocus(
+        identify: "manual_control_demo",
+        keyTarget: keyButton2,
+        enableContentCycling: true,
+        autoCloseAfterCycle: false, // Otomatik kapanmaz
+        enableOverlayTab: true,
+        // onCycleComplete callback'i yok, bu yüzden döngü devam eder
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            padding: EdgeInsets.all(20),
+            builder: (context, controller) {
+              return Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                padding: EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "♾️ Manuel Control Demo",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orange,
+                        fontSize: 18,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      "Bu target döngü bittikten sonra da devam eder.\n\n" +
+                          "Target'a tıklayarak manuel olarak geçebilirsiniz.",
+                      style: TextStyle(color: Colors.black87),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+        alternativeContents: [
+          [
+            TargetContent(
+              align: ContentAlign.top,
+              padding: EdgeInsets.all(20),
+              builder: (context, controller) {
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Colors.orange.shade50,
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(color: Colors.orange, width: 2),
+                  ),
+                  padding: EdgeInsets.all(20),
+                  child: Text(
+                    "Manuel control - döngü bitince de devam eder!\n\nTarget'a tıklayın →",
+                    style: TextStyle(color: Colors.black87),
+                  ),
+                );
+              },
+            ),
+          ],
+        ],
+      ),
+    );
+
+    // 4. Normal target (döngü yok)
     targets.add(
       TargetFocus(
         identify: "normal_target",
-        keyTarget: keyButton1,
+        keyTarget: keyButton3,
         contents: [
           TargetContent(
             align: ContentAlign.bottom,
@@ -378,20 +562,18 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: EdgeInsets.all(20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
+                  children: [
                     Text(
-                      "Normal Tutorial",
+                      "📄 Normal Target",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.green,
+                        color: Colors.purple,
                         fontSize: 18,
                       ),
                     ),
                     SizedBox(height: 10),
                     Text(
-                      "Bu normal bir tutorial target'ıdır.\n\n" +
-                          "Content cycling özelliği aktif değil, bu yüzden overlay'e tıklandığında bir sonraki adıma geçecek.",
+                      "Bu normal bir target. Content cycling özelliği yok.",
                       style: TextStyle(color: Colors.black87),
                     ),
                   ],
@@ -403,10 +585,11 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
 
+    // 5. Son target
     targets.add(
       TargetFocus(
-        identify: "last_target",
-        keyTarget: keyButton2,
+        identify: "final_target",
+        keyTarget: keyButton4,
         contents: [
           TargetContent(
             align: ContentAlign.top,
@@ -426,20 +609,21 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: EdgeInsets.all(20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
+                  children: [
                     Text(
-                      "Tutorial Tamamlandı! 🎊",
+                      "🏁 Tutorial Tamamlandı!",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.orange,
+                        color: Colors.red,
                         fontSize: 18,
                       ),
                     ),
                     SizedBox(height: 10),
                     Text(
-                      "Content cycling özelliğini test ettiniz!\n\n" +
-                          "Bu özellik sayesinde kullanıcılara daha detaylı açıklamalar sunabilirsiniz.",
+                      "Cycle Complete özelliklerini başarıyla test ettiniz!\n\n" +
+                          "• Auto-close after cycle ✅\n" +
+                          "• Custom callback control ✅\n" +
+                          "• Manuel cycle control ✅",
                       style: TextStyle(color: Colors.black87),
                     ),
                   ],

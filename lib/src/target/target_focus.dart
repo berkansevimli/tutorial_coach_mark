@@ -5,6 +5,7 @@ import 'package:tutorial_coach_mark/src/util.dart';
 
 /// Tek bir tutorial target'ının tanımlandığı sınıf
 /// Overlay'e tıklandığında farklı içerikler arasında geçiş yapabilir
+/// Döngü tamamlandığında otomatik kapanma özelliği mevcuttur
 class TargetFocus {
   TargetFocus({
     this.identify,
@@ -19,6 +20,8 @@ class TargetFocus {
     this.enableOverlayTab = false,
     this.enableTargetTab = true,
     this.enableContentCycling = false,
+    this.autoCloseAfterCycle = false,
+    this.onCycleComplete,
     this.alignSkip,
     this.paddingFocus,
     this.focusAnimationDuration,
@@ -44,6 +47,15 @@ class TargetFocus {
   /// true olduğunda overlay'e tıklama target'ı kapatmak yerine içeriği değiştirir
   final bool enableContentCycling;
 
+  /// true olduğunda alternative content döngüsü bitince target otomatik kapanır
+  /// enableContentCycling true olduğunda çalışır
+  final bool autoCloseAfterCycle;
+
+  /// Alternative content döngüsü bittiğinde çağrılır
+  /// return true: target'ı kapat, return false: target'ı açık tut
+  /// null ise autoCloseAfterCycle parametresine göre davranır
+  final bool Function()? onCycleComplete;
+
   final Color? color;
   final AlignmentGeometry? alignSkip;
   final double? paddingFocus;
@@ -53,6 +65,6 @@ class TargetFocus {
 
   @override
   String toString() {
-    return 'TargetFocus{identify: $identify, keyTarget: $keyTarget, targetPosition: $targetPosition, contents: $contents, alternativeContents: $alternativeContents, enableContentCycling: $enableContentCycling, shape: $shape}';
+    return 'TargetFocus{identify: $identify, keyTarget: $keyTarget, targetPosition: $targetPosition, contents: $contents, alternativeContents: $alternativeContents, enableContentCycling: $enableContentCycling, autoCloseAfterCycle: $autoCloseAfterCycle, shape: $shape}';
   }
 }
