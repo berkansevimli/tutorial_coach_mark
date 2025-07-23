@@ -78,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ),
 
-                  // Custom callback demo
+                  // Target tap as overlay demo
                   Container(
                     key: keyButton1,
                     width: double.infinity,
@@ -90,14 +90,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: ElevatedButton(
                       onPressed: () {},
                       child: Text(
-                        "Custom Callback Demo\n(Özel kapatma mantığı)",
+                        "Target Tap as Overlay\n(Target'a tıklama = overlay)",
                         textAlign: TextAlign.center,
                         style: TextStyle(color: Colors.white, fontSize: 12),
                       ),
                     ),
                   ),
 
-                  // Manual control demo
+                  // Cycle fix demo
                   Container(
                     key: keyButton2,
                     width: double.infinity,
@@ -109,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: ElevatedButton(
                       onPressed: () {},
                       child: Text(
-                        "Manual Control Demo\n(Döngü devam eder)",
+                        "Cycle Fix Demo\n(Anlık content sorunu düzeltildi)",
                         textAlign: TextAlign.center,
                         style: TextStyle(color: Colors.white, fontSize: 12),
                       ),
@@ -232,16 +232,16 @@ class _MyHomePageState extends State<MyHomePage> {
       builder: (context) => AlertDialog(
         title: Text("🎉 Tebrikler!"),
         content: Text(
-          "Cycle Complete özelliğini başarıyla test ettiniz!\n\n"
-          "• Auto-close after cycle\n"
-          "• Custom callback control\n"
-          "• Manuel cycle control\n\n"
-          "artık kullanıma hazır!",
+          "Yeni özellikleri başarıyla test ettiniz!\n\n"
+          "✅ Auto-close after cycle\n"
+          "✅ Target tap as overlay\n"
+          "✅ Cycle fix (anlık content sorunu)\n\n"
+          "Artık paket tamamen kullanıma hazır!",
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text("Tamam"),
+            child: Text("Mükemmel!"),
           ),
         ],
       ),
@@ -292,7 +292,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     SizedBox(height: 10),
                     Text(
                       "Bu target döngü tamamlandığında otomatik kapanır.\n\n" +
-                          "Overlay'e tıklayarak 3 farklı içeriği gördükten sonra otomatik olarak bir sonraki target'a geçecek.\n\n" +
+                          "Overlay'e tıklayarak 2 farklı içeriği gördükten sonra direkt bir sonraki target'a geçecek.\n\n" +
                           "🖱️ Overlay'e tıklayın →",
                       style: TextStyle(color: Colors.black87),
                     ),
@@ -319,7 +319,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        "📖 İkinci İçerik",
+                        "🎯 Son İçerik",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.blue,
@@ -328,41 +328,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       SizedBox(height: 10),
                       Text(
-                        "Bu ikinci içerik. Bir daha tıklayın.",
-                        style: TextStyle(color: Colors.black87),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ],
-          [
-            TargetContent(
-              align: ContentAlign.bottom,
-              padding: EdgeInsets.all(20),
-              builder: (context, controller) {
-                return Container(
-                  decoration: BoxDecoration(
-                    color: Colors.green.shade50,
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(color: Colors.green, width: 2),
-                  ),
-                  padding: EdgeInsets.all(20),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        "🎯 Son İçerik",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green,
-                          fontSize: 18,
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        "Bu son içerik! Tekrar tıklayın ve otomatik olarak kapanacak.",
+                        "Bu son içerik! Tekrar tıklayın ve direkt kapanacak (anlık content görünmeyecek).",
                         style: TextStyle(color: Colors.black87),
                       ),
                     ],
@@ -375,31 +341,16 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
 
-    // 2. Custom callback demo
+    // 2. Target tap as overlay demo
     targets.add(
       TargetFocus(
-        identify: "custom_callback_demo",
+        identify: "target_tap_as_overlay_demo",
         keyTarget: keyButton1,
         enableContentCycling: true,
-        autoCloseAfterCycle: false, // Manuel kontrol
         enableOverlayTab: true,
-        onCycleComplete: () {
-          // Özel kapatma mantığı
-          print("Custom callback çağrıldı!");
-
-          // Dialog göster ve kullanıcıya sor
-          bool shouldClose = true; // Varsayılan olarak kapat
-
-          // Bu örnekte her zaman kapat, gerçek uygulamada dialog vs. gösterebilirsiniz
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text("Döngü tamamlandı! Özel callback ile kapatıldı."),
-              duration: Duration(seconds: 2),
-            ),
-          );
-
-          return shouldClose; // true: kapat, false: devam et
-        },
+        enableTargetTabAsOverlay:
+            true, // ✅ Target'a tıklama da overlay gibi davranır
+        autoCloseAfterCycle: true,
         contents: [
           TargetContent(
             align: ContentAlign.bottom,
@@ -422,7 +373,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      "🎛️ Custom Callback Demo",
+                      "🎯 Target Tap as Overlay",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.green,
@@ -431,8 +382,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     SizedBox(height: 10),
                     Text(
-                      "Bu target özel callback kullanır.\n\n" +
-                          "Döngü bittiğinde custom mantık çalışır ve size SnackBar gösterir.",
+                      "Bu target'ta hem overlay'e hem de target'a tıklama aynı etkiyi yapar!\n\n" +
+                          "İstediğinize tıklayın: Target'a 👆 veya Overlay'e 🖱️",
                       style: TextStyle(color: Colors.black87),
                     ),
                   ],
@@ -454,7 +405,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     border: Border.all(color: Colors.green, width: 2),
                   ),
                   padding: EdgeInsets.all(20),
-                  child: Text("Custom callback son içerik!"),
+                  child: Text(
+                    "Perfect! Her iki tıklama da aynı etkiyi yaptı. Bir kez daha tıklayın!",
+                    style: TextStyle(color: Colors.black87),
+                  ),
                 );
               },
             ),
@@ -463,15 +417,14 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
 
-    // 3. Manuel control demo (döngü devam eder)
+    // 3. Cycle fix demo (2 alternative content)
     targets.add(
       TargetFocus(
-        identify: "manual_control_demo",
+        identify: "cycle_fix_demo",
         keyTarget: keyButton2,
         enableContentCycling: true,
-        autoCloseAfterCycle: false, // Otomatik kapanmaz
+        autoCloseAfterCycle: true,
         enableOverlayTab: true,
-        // onCycleComplete callback'i yok, bu yüzden döngü devam eder
         contents: [
           TargetContent(
             align: ContentAlign.top,
@@ -494,7 +447,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      "♾️ Manuel Control Demo",
+                      "🔧 Cycle Fix Demo",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.orange,
@@ -503,8 +456,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     SizedBox(height: 10),
                     Text(
-                      "Bu target döngü bittikten sonra da devam eder.\n\n" +
-                          "Target'a tıklayarak manuel olarak geçebilirsiniz.",
+                      "Bu demo cycle fix'ini test eder.\n\n" +
+                          "2 alternatif content var. Son content'ten sonra anlık ilk content görünmeyecek!",
                       style: TextStyle(color: Colors.black87),
                     ),
                   ],
@@ -527,7 +480,27 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   padding: EdgeInsets.all(20),
                   child: Text(
-                    "Manuel control - döngü bitince de devam eder!\n\nTarget'a tıklayın →",
+                    "İlk alternatif content. Bir daha tıklayın!",
+                    style: TextStyle(color: Colors.black87),
+                  ),
+                );
+              },
+            ),
+          ],
+          [
+            TargetContent(
+              align: ContentAlign.top,
+              padding: EdgeInsets.all(20),
+              builder: (context, controller) {
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Colors.deepOrange.shade50,
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(color: Colors.deepOrange, width: 2),
+                  ),
+                  padding: EdgeInsets.all(20),
+                  child: Text(
+                    "İkinci (son) alternatif content. Bir daha tıklayın - direkt kapanacak!",
                     style: TextStyle(color: Colors.black87),
                   ),
                 );
@@ -620,10 +593,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     SizedBox(height: 10),
                     Text(
-                      "Cycle Complete özelliklerini başarıyla test ettiniz!\n\n" +
+                      "Yeni özellikleri başarıyla test ettiniz!\n\n" +
                           "• Auto-close after cycle ✅\n" +
-                          "• Custom callback control ✅\n" +
-                          "• Manuel cycle control ✅",
+                          "• Target tap as overlay ✅\n" +
+                          "• Cycle fix (anlık content) ✅",
                       style: TextStyle(color: Colors.black87),
                     ),
                   ],

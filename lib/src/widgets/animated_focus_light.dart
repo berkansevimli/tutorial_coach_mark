@@ -165,16 +165,25 @@ abstract class AnimatedFocusLightState extends State<AnimatedFocusLight>
       return;
     }
 
-    final totalContents =
-        _targetFocus.alternativeContents!.length + 1; // +1 for main content
-    final oldContentIndex = _currentContentIndex;
+    final totalAlternatives = _targetFocus.alternativeContents!.length;
+    final currentIndex = _currentContentIndex;
 
+    // Döngü tamamlanma kontrolü: Son alternatif content'te iken
+    if (currentIndex > 0 && currentIndex >= totalAlternatives) {
+      _hasCycleCompleted = true;
+      _handleCycleComplete();
+      return;
+    }
+
+    // Normal döngü: bir sonraki content'e geç
     safeSetState(() {
-      _currentContentIndex = (_currentContentIndex + 1) % totalContents;
+      _currentContentIndex = currentIndex + 1;
     });
 
-    // Döngü tamamlanma kontrolü: İlk içeriğe geri döndük ve daha önce en az bir alternative content gösterildi
-    if (_currentContentIndex == 0 && oldContentIndex > 0) {
+    // Eğer şu anda son alternatif content'teyse, bir sonraki tıklamada cycle complete olacak
+    // Bu durumu kontrol et ama henüz complete yapma
+    if (_currentContentIndex > totalAlternatives) {
+      // Bu duruma normalde girmemeli, ama güvenlik için
       _hasCycleCompleted = true;
       _handleCycleComplete();
       return;
@@ -204,7 +213,11 @@ abstract class AnimatedFocusLightState extends State<AnimatedFocusLight>
       nextIndex++;
       _revertAnimation();
     } else {
-      // Döngüyü devam ettir
+      // Döngüyü sıfırla ve devam ettir
+      safeSetState(() {
+        _currentContentIndex = 0;
+        _hasCycleCompleted = false;
+      });
       widget.onContentChanged?.call(_targetFocus, _currentContentIndex);
       widget.focus?.call(_targetFocus);
     }
@@ -215,6 +228,15 @@ abstract class AnimatedFocusLightState extends State<AnimatedFocusLight>
     bool overlayTap = false,
   }) async {
     if (_isAnimating) return;
+
+    // Eğer target tap'ı overlay gibi davranması isteniyor ve content cycling aktifse
+    if (targetTap &&
+        _targetFocus.enableTargetTabAsOverlay &&
+        _targetFocus.enableContentCycling) {
+      await widget.clickTarget?.call(_targetFocus);
+      _cycleContent();
+      return;
+    }
 
     // Eğer overlay'e tıklandı ve content cycling aktifse, içeriği değiştir
     if (overlayTap && _targetFocus.enableContentCycling) {

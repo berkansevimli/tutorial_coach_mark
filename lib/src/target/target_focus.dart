@@ -19,6 +19,7 @@ class TargetFocus {
     this.color,
     this.enableOverlayTab = false,
     this.enableTargetTab = true,
+    this.enableTargetTabAsOverlay = false,
     this.enableContentCycling = false,
     this.autoCloseAfterCycle = false,
     this.onCycleComplete,
@@ -44,6 +45,10 @@ class TargetFocus {
   final bool enableOverlayTab;
   final bool enableTargetTab;
 
+  /// true olduğunda target'a tıklama da overlay'e tıklama gibi davranır
+  /// enableContentCycling true olduğunda content cycling için kullanılabilir
+  final bool enableTargetTabAsOverlay;
+
   /// true olduğunda overlay'e tıklama target'ı kapatmak yerine içeriği değiştirir
   final bool enableContentCycling;
 
@@ -65,6 +70,6 @@ class TargetFocus {
 
   @override
   String toString() {
-    return 'TargetFocus{identify: $identify, keyTarget: $keyTarget, targetPosition: $targetPosition, contents: $contents, alternativeContents: $alternativeContents, enableContentCycling: $enableContentCycling, autoCloseAfterCycle: $autoCloseAfterCycle, shape: $shape}';
+    return 'TargetFocus{identify: $identify, keyTarget: $keyTarget, targetPosition: $targetPosition, contents: $contents, alternativeContents: $alternativeContents, enableContentCycling: $enableContentCycling, enableTargetTabAsOverlay: $enableTargetTabAsOverlay, autoCloseAfterCycle: $autoCloseAfterCycle, shape: $shape}';
   }
 }

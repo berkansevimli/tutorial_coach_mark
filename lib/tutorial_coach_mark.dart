@@ -37,11 +37,13 @@ export 'package:tutorial_coach_mark/src/util.dart';
 ///     identify: "menu",
 ///     keyTarget: menuKey,
 ///     enableContentCycling: true, // Overlay tıklandığında içerik değişir
+///     enableOverlayTab: true,     // Overlay'e tıklamayı aktifleştir
+///     enableTargetTabAsOverlay: true, // Target'a tıklama da overlay gibi davranır
 ///     autoCloseAfterCycle: true,  // Döngü bitince otomatik kapanır
 ///     contents: [
 ///       TargetContent(
 ///         align: ContentAlign.bottom,
-///         child: Text("İlk içerik - Overlay'e tıklayın"),
+///         child: Text("İlk içerik - Tıklayın"),
 ///       ),
 ///     ],
 ///     alternativeContents: [
@@ -54,7 +56,7 @@ export 'package:tutorial_coach_mark/src/util.dart';
 ///       [
 ///         TargetContent(
 ///           align: ContentAlign.bottom,
-///           child: Text("Üçüncü içerik - Son içerik"),
+///           child: Text("Son içerik - Bitecek"),
 ///         ),
 ///       ],
 ///     ],
@@ -68,7 +70,8 @@ export 'package:tutorial_coach_mark/src/util.dart';
 ///
 /// Key features:
 /// - Multiple target focusing
-/// - Content cycling (overlay tıklanınca içerik değişir)
+/// - Content cycling (overlay/target tıklanınca içerik değişir)
+/// - Target tap as overlay (target'a tıklama overlay gibi davranır)
 /// - Auto close after cycle completion (döngü bitince otomatik kapanma)
 /// - Customizable animations and styling
 /// - Skip button functionality
