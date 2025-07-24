@@ -11,6 +11,7 @@ import 'package:tutorial_coach_mark/src/widgets/animated_focus_light.dart';
 /// Ana tutorial coach mark widget'ı
 /// Content cycling özelliği ile overlay'e tıklandığında farklı içerikler gösterebilir
 /// Döngü tamamlandığında otomatik kapanma özelliği mevcuttur
+/// Belirli süre sonra otomatik kapanma özelliği mevcuttur
 class TutorialCoachMarkWidget extends StatefulWidget {
   const TutorialCoachMarkWidget({
     Key? key,
@@ -41,6 +42,8 @@ class TutorialCoachMarkWidget extends StatefulWidget {
     this.backgroundSemanticLabel,
     this.initialFocus = 0,
     this.enableTapAnimations = false,
+    this.autoClose = false,
+    this.autoCloseTimer = const Duration(seconds: 3),
   })  : assert(targets.length > 0),
         super(key: key);
 
@@ -78,6 +81,12 @@ class TutorialCoachMarkWidget extends StatefulWidget {
   /// Global tıklama animasyonları kontrolü
   final bool enableTapAnimations;
 
+  /// Global auto close kontrolü
+  final bool autoClose;
+
+  /// Global auto close timer süresi
+  final Duration autoCloseTimer;
+
   @override
   TutorialCoachMarkWidgetState createState() => TutorialCoachMarkWidgetState();
 }
@@ -114,6 +123,8 @@ class TutorialCoachMarkWidgetState extends State<TutorialCoachMarkWidget>
             imageFilter: widget.imageFilter,
             backgroundSemanticLabel: widget.backgroundSemanticLabel,
             enableTapAnimations: widget.enableTapAnimations,
+            autoClose: widget.autoClose,
+            autoCloseTimer: widget.autoCloseTimer,
             clickTarget: (target) {
               return widget.clickTarget?.call(target);
             },

@@ -13,6 +13,7 @@ import 'package:tutorial_coach_mark/src/util.dart';
 /// AnimatedFocusLight widget'ı - tutorial target'larının animasyonlu gösterimini sağlar
 /// Content cycling özelliği ile overlay'e tıklandığında farklı içerikler gösterilebilir
 /// Döngü tamamlandığında otomatik kapanma özelliği mevcuttur
+/// Belirli süre sonra otomatik kapanma özelliği mevcuttur
 class AnimatedFocusLight extends StatefulWidget {
   const AnimatedFocusLight({
     Key? key,
@@ -38,6 +39,8 @@ class AnimatedFocusLight extends StatefulWidget {
     this.initialFocus = 0,
     this.backgroundSemanticLabel,
     this.enableTapAnimations = false,
+    this.autoClose = false,
+    this.autoCloseTimer = const Duration(seconds: 3),
   })  : assert(targets.length > 0),
         super(key: key);
 
@@ -73,6 +76,14 @@ class AnimatedFocusLight extends StatefulWidget {
   /// false olduğunda tüm tap animasyonları kapalı olur
   final bool enableTapAnimations;
 
+  /// Global auto close kontrolü
+  /// true olduğunda tüm target'lar için auto close aktif olur
+  final bool autoClose;
+
+  /// Global auto close timer süresi
+  /// autoClose true olduğunda bu süre kadar bekleyip target'ları otomatik kapatır
+  final Duration autoCloseTimer;
+
   @override
   // ignore: no_logic_in_create_state
   AnimatedFocusLightState createState() => pulseEnable
@@ -99,6 +110,9 @@ abstract class AnimatedFocusLightState extends State<AnimatedFocusLight>
 
   /// Döngünün tamamlanıp tamamlanmadığını takip eder
   bool _hasCycleCompleted = false;
+
+  /// Auto close timer
+  Timer? _autoCloseTimer;
 
   double _progressAnimated = 0;
   int nextIndex = 0;
@@ -143,6 +157,7 @@ abstract class AnimatedFocusLightState extends State<AnimatedFocusLight>
 
   @override
   void dispose() {
+    _cancelAutoCloseTimer();
     _controller.dispose();
     super.dispose();
   }
@@ -161,6 +176,43 @@ abstract class AnimatedFocusLightState extends State<AnimatedFocusLight>
     _revertAnimation();
   }
 
+  /// Auto close timer'ını iptal eder
+  void _cancelAutoCloseTimer() {
+    _autoCloseTimer?.cancel();
+    _autoCloseTimer = null;
+  }
+
+  /// Auto close timer'ını başlatır
+  void _startAutoCloseTimer() {
+    if (!_shouldAutoClose()) return;
+
+    _cancelAutoCloseTimer(); // Önceki timer'ı iptal et
+
+    final duration = _getAutoCloseTimer();
+    _autoCloseTimer = Timer(duration, () {
+      if (mounted && !_isAnimating) {
+        // Timer doldu, target'ı otomatik kapat
+        nextIndex++;
+        _revertAnimation();
+      }
+    });
+  }
+
+  /// Auto close aktif olup olmadığını kontrol eder
+  /// Target-level setting global setting'i override eder
+  bool _shouldAutoClose() {
+    return _targetFocus.autoClose || widget.autoClose;
+  }
+
+  /// Auto close timer süresini döndürür
+  /// Target-level setting global setting'i override eder
+  Duration _getAutoCloseTimer() {
+    if (_targetFocus.autoClose) {
+      return _targetFocus.autoCloseTimer;
+    }
+    return widget.autoCloseTimer;
+  }
+
   /// Content cycling için alternatif içerikleri döndürür
   /// Döngü tamamlandığında otomatik kapanma mantığını da yönetir
   void _cycleContent() {
@@ -169,6 +221,9 @@ abstract class AnimatedFocusLightState extends State<AnimatedFocusLight>
         _targetFocus.alternativeContents!.isEmpty) {
       return;
     }
+
+    // Timer'ı iptal et çünkü kullanıcı tıkladı
+    _cancelAutoCloseTimer();
 
     final totalAlternatives = _targetFocus.alternativeContents!.length;
     final currentIndex = _currentContentIndex;
@@ -199,10 +254,16 @@ abstract class AnimatedFocusLightState extends State<AnimatedFocusLight>
 
     // Focus callback'ini tekrar çağır ki yeni content görüntülensin
     widget.focus?.call(_targetFocus);
+
+    // Yeni content için timer'ı tekrar başlat
+    _startAutoCloseTimer();
   }
 
   /// Döngü tamamlandığında çağrılır ve uygun aksiyonu alır
   void _handleCycleComplete() {
+    // Timer'ı iptal et
+    _cancelAutoCloseTimer();
+
     // Önce cycle complete callback'ini çağır
     widget.onCycleComplete?.call(_targetFocus);
 
@@ -225,6 +286,9 @@ abstract class AnimatedFocusLightState extends State<AnimatedFocusLight>
       });
       widget.onContentChanged?.call(_targetFocus, _currentContentIndex);
       widget.focus?.call(_targetFocus);
+
+      // Döngü sıfırlandı, timer'ı tekrar başlat
+      _startAutoCloseTimer();
     }
   }
 
@@ -233,6 +297,9 @@ abstract class AnimatedFocusLightState extends State<AnimatedFocusLight>
     bool overlayTap = false,
   }) async {
     if (_isAnimating) return;
+
+    // Timer'ı iptal et çünkü kullanıcı tıkladı
+    _cancelAutoCloseTimer();
 
     // Eğer target tap'ı overlay gibi davranması isteniyor ve content cycling aktifse
     if (targetTap &&
@@ -309,6 +376,9 @@ abstract class AnimatedFocusLightState extends State<AnimatedFocusLight>
 
     await _controller.forward();
     _isAnimating = false;
+
+    // Target gösterildikten sonra auto close timer'ını başlat
+    _startAutoCloseTimer();
   }
 
   void _goToFocus(int index) {
@@ -321,6 +391,7 @@ abstract class AnimatedFocusLightState extends State<AnimatedFocusLight>
   }
 
   void _finish() {
+    _cancelAutoCloseTimer();
     safeSetState(() => _currentFocus = 0);
     widget.finish!();
   }

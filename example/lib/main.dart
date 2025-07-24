@@ -116,6 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ),
 
+                  // Auto close timer demo
                   Container(
                     key: keyButton3,
                     width: double.infinity,
@@ -127,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: ElevatedButton(
                       onPressed: () {},
                       child: Text(
-                        "Normal Target\n(Animasyon yok)",
+                        "Auto Close Timer Demo\n(2 saniye sonra kapanır)",
                         textAlign: TextAlign.center,
                         style: TextStyle(color: Colors.white, fontSize: 12),
                       ),
@@ -148,7 +149,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: ElevatedButton(
                             onPressed: () {},
                             child: Text(
-                              "Son Target",
+                              "Normal Target",
                               style: TextStyle(color: Colors.white),
                             ),
                           ),
@@ -236,8 +237,9 @@ class _MyHomePageState extends State<MyHomePage> {
           "Tüm yeni özellikleri başarıyla test ettiniz!\n\n"
           "✅ Auto-close after cycle\n"
           "✅ Target tap as overlay\n"
-          "✅ Tap animations control\n\n"
-          "Paket artık tam anlamıyla production-ready! 🚀",
+          "✅ Tap animations control\n"
+          "✅ Auto close timer\n\n"
+          "Paket artık tam anlamıyla feature-complete! 🚀✨",
         ),
         actions: [
           TextButton(
@@ -587,12 +589,73 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
 
-    // 4. Normal target (döngü yok, animasyon yok)
+    // 4. Auto close timer demo
+    targets.add(
+      TargetFocus(
+        identify: "auto_close_timer_demo",
+        keyTarget: keyButton3,
+        autoClose: true, // ✅ Auto close aktif
+        autoCloseTimer: Duration(seconds: 2), // ✅ 2 saniye sonra kapan
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            padding: EdgeInsets.all(20),
+            builder: (context, controller) {
+              return Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                padding: EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.timer, color: Colors.purple, size: 24),
+                        SizedBox(width: 8),
+                        Text(
+                          "Auto Close Timer Demo",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.purple,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      "Bu target 2 saniye sonra otomatik kapanacak!\n\n" +
+                          "⏱️ Geri sayım başladı...\n" +
+                          "⚡ Tıklarsanız timer iptal olur ve normal davranır.",
+                      style: TextStyle(color: Colors.black87),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+
+    // 5. Normal target (döngü yok, animasyon yok, timer yok)
     targets.add(
       TargetFocus(
         identify: "normal_target",
-        keyTarget: keyButton3,
+        keyTarget: keyButton4,
         // enableTapAnimations: false (varsayılan), global da false
+        // autoClose: false (varsayılan)
         contents: [
           TargetContent(
             align: ContentAlign.bottom,
@@ -617,14 +680,14 @@ class _MyHomePageState extends State<MyHomePage> {
                       "📄 Normal Target",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.purple,
+                        color: Colors.red,
                         fontSize: 18,
                       ),
                     ),
                     SizedBox(height: 10),
                     Text(
-                      "Bu normal target. Tıklama animasyonu yok.\n\n" +
-                          "Önceki target'la karşılaştırın!",
+                      "Bu normal target. Timer yok, animasyon yok.\n\n" +
+                          "Sadece tıklayarak geçebilirsiniz.",
                       style: TextStyle(color: Colors.black87),
                     ),
                   ],
@@ -636,11 +699,11 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
 
-    // 5. Son target
+    // 6. Son target
     targets.add(
       TargetFocus(
         identify: "final_target",
-        keyTarget: keyButton4,
+        keyTarget: keyButton5,
         contents: [
           TargetContent(
             align: ContentAlign.top,
@@ -665,7 +728,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       "🏁 Tutorial Tamamlandı!",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.red,
+                        color: Colors.teal,
                         fontSize: 18,
                       ),
                     ),
@@ -674,7 +737,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       "Tüm yeni özellikleri test ettiniz!\n\n" +
                           "• Auto-close after cycle ✅\n" +
                           "• Target tap as overlay ✅\n" +
-                          "• Tap animations control ✅",
+                          "• Tap animations control ✅\n" +
+                          "• Auto close timer ✅",
                       style: TextStyle(color: Colors.black87),
                     ),
                   ],

@@ -6,6 +6,7 @@ import 'package:tutorial_coach_mark/src/util.dart';
 /// Tek bir tutorial target'ının tanımlandığı sınıf
 /// Overlay'e tıklandığında farklı içerikler arasında geçiş yapabilir
 /// Döngü tamamlandığında otomatik kapanma özelliği mevcuttur
+/// Belirli süre sonra otomatik kapanma özelliği mevcuttur
 class TargetFocus {
   TargetFocus({
     this.identify,
@@ -24,6 +25,8 @@ class TargetFocus {
     this.autoCloseAfterCycle = false,
     this.onCycleComplete,
     this.enableTapAnimations = false,
+    this.autoClose = false,
+    this.autoCloseTimer = const Duration(seconds: 3),
     this.alignSkip,
     this.paddingFocus,
     this.focusAnimationDuration,
@@ -66,6 +69,14 @@ class TargetFocus {
   /// false olduğunda temiz, animasyonsuz tıklama deneyimi
   final bool enableTapAnimations;
 
+  /// true olduğunda target belirli süre sonra otomatik kapanır
+  /// autoCloseTimer süresi kadar bekler
+  final bool autoClose;
+
+  /// autoClose true olduğunda bu süre kadar bekleyip target'ı otomatik kapatır
+  /// Kullanıcı tıklarsa timer iptal olur
+  final Duration autoCloseTimer;
+
   final Color? color;
   final AlignmentGeometry? alignSkip;
   final double? paddingFocus;
@@ -75,6 +86,6 @@ class TargetFocus {
 
   @override
   String toString() {
-    return 'TargetFocus{identify: $identify, keyTarget: $keyTarget, targetPosition: $targetPosition, contents: $contents, alternativeContents: $alternativeContents, enableContentCycling: $enableContentCycling, enableTargetTabAsOverlay: $enableTargetTabAsOverlay, enableTapAnimations: $enableTapAnimations, autoCloseAfterCycle: $autoCloseAfterCycle, shape: $shape}';
+    return 'TargetFocus{identify: $identify, keyTarget: $keyTarget, targetPosition: $targetPosition, contents: $contents, alternativeContents: $alternativeContents, enableContentCycling: $enableContentCycling, enableTargetTabAsOverlay: $enableTargetTabAsOverlay, enableTapAnimations: $enableTapAnimations, autoClose: $autoClose, autoCloseTimer: $autoCloseTimer, autoCloseAfterCycle: $autoCloseAfterCycle, shape: $shape}';
   }
 }

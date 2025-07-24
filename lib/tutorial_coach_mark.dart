@@ -40,6 +40,8 @@ export 'package:tutorial_coach_mark/src/util.dart';
 ///     enableOverlayTab: true,     // Overlay'e tıklamayı aktifleştir
 ///     enableTargetTabAsOverlay: true, // Target'a tıklama da overlay gibi davranır
 ///     autoCloseAfterCycle: true,  // Döngü bitince otomatik kapanır
+///     autoClose: true,            // 3 saniye sonra otomatik kapanır
+///     autoCloseTimer: Duration(seconds: 3),
 ///     contents: [
 ///       TargetContent(
 ///         align: ContentAlign.bottom,
@@ -73,6 +75,7 @@ export 'package:tutorial_coach_mark/src/util.dart';
 /// - Content cycling (overlay/target tıklanınca içerik değişir)
 /// - Target tap as overlay (target'a tıklama overlay gibi davranır)
 /// - Auto close after cycle completion (döngü bitince otomatik kapanma)
+/// - Auto close timer (belirli süre sonra otomatik kapanma)
 /// - Customizable tap animations (tıklama animasyonları kontrolü)
 /// - Customizable animations and styling
 /// - Skip button functionality
@@ -124,6 +127,16 @@ class TutorialCoachMark {
   /// Individual target'lar kendi enableTapAnimations ile override edebilir
   final bool enableTapAnimations;
 
+  /// Global auto close kontrolü
+  /// true olduğunda tüm target'lar için auto close aktif olur
+  /// Individual target'lar kendi autoClose ile override edebilir
+  final bool autoClose;
+
+  /// Global auto close timer süresi
+  /// autoClose true olduğunda bu süre kadar bekleyip target'ları otomatik kapatır
+  /// Individual target'lar kendi autoCloseTimer ile override edebilir
+  final Duration autoCloseTimer;
+
   final GlobalKey<TutorialCoachMarkWidgetState> _widgetKey = GlobalKey();
   final bool disableBackButton;
 
@@ -158,6 +171,8 @@ class TutorialCoachMark {
     this.initialFocus = 0,
     this.backgroundSemanticLabel,
     this.enableTapAnimations = false,
+    this.autoClose = false,
+    this.autoCloseTimer = const Duration(seconds: 3),
     this.disableBackButton = true,
   }) : assert(opacityShadow >= 0 && opacityShadow <= 1);
 
@@ -192,6 +207,8 @@ class TutorialCoachMark {
           initialFocus: initialFocus,
           backgroundSemanticLabel: backgroundSemanticLabel,
           enableTapAnimations: enableTapAnimations,
+          autoClose: autoClose,
+          autoCloseTimer: autoCloseTimer,
         );
       },
     );
