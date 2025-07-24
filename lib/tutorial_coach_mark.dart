@@ -73,6 +73,7 @@ export 'package:tutorial_coach_mark/src/util.dart';
 /// - Content cycling (overlay/target tıklanınca içerik değişir)
 /// - Target tap as overlay (target'a tıklama overlay gibi davranır)
 /// - Auto close after cycle completion (döngü bitince otomatik kapanma)
+/// - Customizable tap animations (tıklama animasyonları kontrolü)
 /// - Customizable animations and styling
 /// - Skip button functionality
 /// - Support for safe area
@@ -117,6 +118,12 @@ class TutorialCoachMark {
   final ImageFilter? imageFilter;
   final String? backgroundSemanticLabel;
   final int initialFocus;
+
+  /// Global tıklama animasyonları kontrolü
+  /// false olduğunda tüm target'lar için tıklama animasyonları kapalı olur
+  /// Individual target'lar kendi enableTapAnimations ile override edebilir
+  final bool enableTapAnimations;
+
   final GlobalKey<TutorialCoachMarkWidgetState> _widgetKey = GlobalKey();
   final bool disableBackButton;
 
@@ -150,6 +157,7 @@ class TutorialCoachMark {
     this.imageFilter,
     this.initialFocus = 0,
     this.backgroundSemanticLabel,
+    this.enableTapAnimations = false,
     this.disableBackButton = true,
   }) : assert(opacityShadow >= 0 && opacityShadow <= 1);
 
@@ -183,6 +191,7 @@ class TutorialCoachMark {
           imageFilter: imageFilter,
           initialFocus: initialFocus,
           backgroundSemanticLabel: backgroundSemanticLabel,
+          enableTapAnimations: enableTapAnimations,
         );
       },
     );

@@ -23,6 +23,7 @@ class TargetFocus {
     this.enableContentCycling = false,
     this.autoCloseAfterCycle = false,
     this.onCycleComplete,
+    this.enableTapAnimations = false,
     this.alignSkip,
     this.paddingFocus,
     this.focusAnimationDuration,
@@ -61,6 +62,10 @@ class TargetFocus {
   /// null ise autoCloseAfterCycle parametresine göre davranır
   final bool Function()? onCycleComplete;
 
+  /// true olduğunda tıklama animasyonları (ripple effect) gösterilir
+  /// false olduğunda temiz, animasyonsuz tıklama deneyimi
+  final bool enableTapAnimations;
+
   final Color? color;
   final AlignmentGeometry? alignSkip;
   final double? paddingFocus;
@@ -70,6 +75,6 @@ class TargetFocus {
 
   @override
   String toString() {
-    return 'TargetFocus{identify: $identify, keyTarget: $keyTarget, targetPosition: $targetPosition, contents: $contents, alternativeContents: $alternativeContents, enableContentCycling: $enableContentCycling, enableTargetTabAsOverlay: $enableTargetTabAsOverlay, autoCloseAfterCycle: $autoCloseAfterCycle, shape: $shape}';
+    return 'TargetFocus{identify: $identify, keyTarget: $keyTarget, targetPosition: $targetPosition, contents: $contents, alternativeContents: $alternativeContents, enableContentCycling: $enableContentCycling, enableTargetTabAsOverlay: $enableTargetTabAsOverlay, enableTapAnimations: $enableTapAnimations, autoCloseAfterCycle: $autoCloseAfterCycle, shape: $shape}';
   }
 }

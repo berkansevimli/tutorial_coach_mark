@@ -40,6 +40,7 @@ class TutorialCoachMarkWidget extends StatefulWidget {
     this.imageFilter,
     this.backgroundSemanticLabel,
     this.initialFocus = 0,
+    this.enableTapAnimations = false,
   })  : assert(targets.length > 0),
         super(key: key);
 
@@ -73,6 +74,9 @@ class TutorialCoachMarkWidget extends StatefulWidget {
   final ImageFilter? imageFilter;
   final int initialFocus;
   final String? backgroundSemanticLabel;
+
+  /// Global tıklama animasyonları kontrolü
+  final bool enableTapAnimations;
 
   @override
   TutorialCoachMarkWidgetState createState() => TutorialCoachMarkWidgetState();
@@ -109,6 +113,7 @@ class TutorialCoachMarkWidgetState extends State<TutorialCoachMarkWidget>
             rootOverlay: widget.rootOverlay,
             imageFilter: widget.imageFilter,
             backgroundSemanticLabel: widget.backgroundSemanticLabel,
+            enableTapAnimations: widget.enableTapAnimations,
             clickTarget: (target) {
               return widget.clickTarget?.call(target);
             },

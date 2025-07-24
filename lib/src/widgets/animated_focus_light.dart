@@ -37,6 +37,7 @@ class AnimatedFocusLight extends StatefulWidget {
     this.rootOverlay = false,
     this.initialFocus = 0,
     this.backgroundSemanticLabel,
+    this.enableTapAnimations = false,
   })  : assert(targets.length > 0),
         super(key: key);
 
@@ -67,6 +68,10 @@ class AnimatedFocusLight extends StatefulWidget {
   final ImageFilter? imageFilter;
   final int initialFocus;
   final String? backgroundSemanticLabel;
+
+  /// Global tıklama animasyonları kontrolü
+  /// false olduğunda tüm tap animasyonları kapalı olur
+  final bool enableTapAnimations;
 
   @override
   // ignore: no_logic_in_create_state
@@ -405,6 +410,23 @@ abstract class AnimatedFocusLightState extends State<AnimatedFocusLight>
 
   /// Döngünün tamamlanıp tamamlanmadığını döndürür
   bool get hasCycleCompleted => _hasCycleCompleted;
+
+  /// Tıklama animasyonlarının aktif olup olmadığını kontrol eder
+  /// Target-level setting global setting'i override edebilir
+  bool _shouldShowTapAnimations() {
+    // Target-level setting öncelikli, sonra global setting
+    return _targetFocus.enableTapAnimations || widget.enableTapAnimations;
+  }
+
+  /// Splash color'u animate olup olmamasına göre döndürür
+  Color? _getSplashColor() {
+    return _shouldShowTapAnimations() ? null : Colors.transparent;
+  }
+
+  /// Highlight color'u animate olup olmamasına göre döndürür
+  Color? _getHighlightColor() {
+    return _shouldShowTapAnimations() ? null : Colors.transparent;
+  }
 }
 
 class AnimatedStaticFocusLightState extends AnimatedFocusLightState {
@@ -427,6 +449,8 @@ class AnimatedStaticFocusLightState extends AnimatedFocusLightState {
       button: true,
       child: InkWell(
         excludeFromSemantics: true,
+        splashColor: _getSplashColor(), // Dynamic splash control
+        highlightColor: _getHighlightColor(), // Dynamic highlight control
         onTap: _targetFocus.enableOverlayTab
             ? () => _tapHandler(overlayTap: true)
             : null,
@@ -442,6 +466,9 @@ class AnimatedStaticFocusLightState extends AnimatedFocusLightState {
                   top: top,
                   child: InkWell(
                     borderRadius: _betBorderRadiusTarget(),
+                    splashColor: _getSplashColor(), // Dynamic splash control
+                    highlightColor:
+                        _getHighlightColor(), // Dynamic highlight control
                     onTapDown: _tapHandlerForPosition,
                     onTap: _onTargetTap,
                     child: Container(
@@ -521,6 +548,8 @@ class AnimatedPulseFocusLightState extends AnimatedFocusLightState {
       button: true,
       child: InkWell(
         excludeFromSemantics: true,
+        splashColor: _getSplashColor(), // Dynamic splash control
+        highlightColor: _getHighlightColor(), // Dynamic highlight control
         onTap: _targetFocus.enableOverlayTab
             ? () => _tapHandler(overlayTap: true)
             : null,
@@ -542,6 +571,10 @@ class AnimatedPulseFocusLightState extends AnimatedFocusLightState {
                       top: top,
                       child: InkWell(
                         borderRadius: _betBorderRadiusTarget(),
+                        splashColor:
+                            _getSplashColor(), // Dynamic splash control
+                        highlightColor:
+                            _getHighlightColor(), // Dynamic highlight control
                         onTap: _onTargetTap,
                         onTapDown: _tapHandlerForPosition,
                         child: Container(

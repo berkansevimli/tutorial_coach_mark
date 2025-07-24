@@ -97,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ),
 
-                  // Cycle fix demo
+                  // Tap animations demo
                   Container(
                     key: keyButton2,
                     width: double.infinity,
@@ -109,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: ElevatedButton(
                       onPressed: () {},
                       child: Text(
-                        "Cycle Fix Demo\n(Anlık content sorunu düzeltildi)",
+                        "Tap Animations Demo\n(Tıklama animasyonları aktif)",
                         textAlign: TextAlign.center,
                         style: TextStyle(color: Colors.white, fontSize: 12),
                       ),
@@ -127,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: ElevatedButton(
                       onPressed: () {},
                       child: Text(
-                        "Normal Target\n(Cycle özelliği yok)",
+                        "Normal Target\n(Animasyon yok)",
                         textAlign: TextAlign.center,
                         style: TextStyle(color: Colors.white, fontSize: 12),
                       ),
@@ -198,7 +198,8 @@ class _MyHomePageState extends State<MyHomePage> {
       textSkip: "ATLA",
       paddingFocus: 10,
       opacityShadow: 0.5,
-      imageFilter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+      imageFilter:
+          ImageFilter.blur(sigmaX: 2, sigmaY: 2), // ✅ Blur azaltıldı (8→2)
       onFinish: () {
         print("Tutorial tamamlandı");
         _showCompletionDialog();
@@ -232,11 +233,11 @@ class _MyHomePageState extends State<MyHomePage> {
       builder: (context) => AlertDialog(
         title: Text("🎉 Tebrikler!"),
         content: Text(
-          "Yeni özellikleri başarıyla test ettiniz!\n\n"
+          "Tüm yeni özellikleri başarıyla test ettiniz!\n\n"
           "✅ Auto-close after cycle\n"
           "✅ Target tap as overlay\n"
-          "✅ Cycle fix (anlık content sorunu)\n\n"
-          "Artık paket tamamen kullanıma hazır!",
+          "✅ Tap animations control\n\n"
+          "Paket artık tam anlamıyla production-ready! 🚀",
         ),
         actions: [
           TextButton(
@@ -511,11 +512,87 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
 
-    // 4. Normal target (döngü yok)
+    // 3. Tap animations demo
+    targets.add(
+      TargetFocus(
+        identify: "tap_animations_demo",
+        keyTarget: keyButton2,
+        enableContentCycling: true,
+        autoCloseAfterCycle: true,
+        enableOverlayTab: true,
+        enableTapAnimations: true, // ✅ Bu target'ta tıklama animasyonları aktif
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            padding: EdgeInsets.all(20),
+            builder: (context, controller) {
+              return Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                padding: EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "🎭 Tap Animations Demo",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orange,
+                        fontSize: 18,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      "Bu target'ta tıklama animasyonları (ripple effect) aktif!\n\n" +
+                          "Overlay'e veya target'a tıklayınca animasyon göreceksiniz.",
+                      style: TextStyle(color: Colors.black87),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+        alternativeContents: [
+          [
+            TargetContent(
+              align: ContentAlign.top,
+              padding: EdgeInsets.all(20),
+              builder: (context, controller) {
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Colors.orange.shade50,
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(color: Colors.orange, width: 2),
+                  ),
+                  padding: EdgeInsets.all(20),
+                  child: Text(
+                    "Gördünüz mü? Tıklama animasyonu vardı! Tekrar tıklayın ve karşılaştırın.",
+                    style: TextStyle(color: Colors.black87),
+                  ),
+                );
+              },
+            ),
+          ],
+        ],
+      ),
+    );
+
+    // 4. Normal target (döngü yok, animasyon yok)
     targets.add(
       TargetFocus(
         identify: "normal_target",
         keyTarget: keyButton3,
+        // enableTapAnimations: false (varsayılan), global da false
         contents: [
           TargetContent(
             align: ContentAlign.bottom,
@@ -546,7 +623,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     SizedBox(height: 10),
                     Text(
-                      "Bu normal bir target. Content cycling özelliği yok.",
+                      "Bu normal target. Tıklama animasyonu yok.\n\n" +
+                          "Önceki target'la karşılaştırın!",
                       style: TextStyle(color: Colors.black87),
                     ),
                   ],
@@ -593,10 +671,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     SizedBox(height: 10),
                     Text(
-                      "Yeni özellikleri başarıyla test ettiniz!\n\n" +
+                      "Tüm yeni özellikleri test ettiniz!\n\n" +
                           "• Auto-close after cycle ✅\n" +
                           "• Target tap as overlay ✅\n" +
-                          "• Cycle fix (anlık content) ✅",
+                          "• Tap animations control ✅",
                       style: TextStyle(color: Colors.black87),
                     ),
                   ],
